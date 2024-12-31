@@ -1,0 +1,12 @@
+in backend we used concept of router
+and useing cors policy we maintained the cross origin 
+and controllers are used to maintain the function that we need to call
+when we are moving at that route 
+cors options are must 
+schema is used ->Todos and user
+todos schema contains username to store it uniqly and 
+and fetching todo based on username and show to user
+req.body contains all data that is passed as post request to user
+postman is used in which header is set to content-type
+and application json 
+

@@ -175,7 +175,7 @@ export const HomePage = ({ isLogedIn, setIsLogedIn }) => {
         if (speakBtn == 'Loading') {
             return;
         }
-        <Speech text={ele.work} displayText="Speak" textAsButton={true} />
+       
         setSpeakBtn('Speak')
     }
 
@@ -221,10 +221,7 @@ export const HomePage = ({ isLogedIn, setIsLogedIn }) => {
                                         fontSize: "1.5rem"
                                     }} /> </Button>
                                     <Button variant="contained" onClick={() => handleUpdate(ele)} className={homecss.btn} >Update</Button>
-                                    <Button variant="contained" onClick={() => handleSpeak(ele)} className={homecss.btn} >{speakBtn}</Button>
-                                    {/* <Button onClick={setCopied}>
-                                     copied {isCopied ? "Yes!" : "Nope!"}
-                                    </Button> */}
+                                    <Speech text={ele.work} displayText="Speak" textAsButton={true} />
                                 </li>
                             ))}
                         </ul>
@@ -239,6 +236,7 @@ export const HomePage = ({ isLogedIn, setIsLogedIn }) => {
                 <ThemeProvider theme={theme}>
                     <CssBaseline />
                     {/* navigate is used to move to signup page when clicked on it  */}
+                    
                     <div className={logincss.container}>
                         <Button variant="contained" onClick={() => navigate('/signup')} className={`${homecss.btn} ${homecss.signup}`} >SignUp</Button>
 

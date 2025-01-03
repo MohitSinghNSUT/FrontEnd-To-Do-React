@@ -1,11 +1,13 @@
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import homecss from './homepage.module.css';
 import logincss from './login.module.css'
 import { useNavigate } from "react-router-dom";
 import { AiFillDelete } from "react-icons/ai";
-
+import useClipboard from "react-use-clipboard" 
+import "regenerator-runtime/runtime";
+import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
@@ -15,6 +17,7 @@ import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormLabel from '@mui/material/FormLabel';
 import { Button } from "@mui/material";
+import Speech from 'react-speech';
 function MyApp({ mode, setMode }) {
     return (
         <Box
@@ -49,7 +52,8 @@ function MyApp({ mode, setMode }) {
     );
 }
 
-
+const url='https://backend-to-do-11q2.onrender.com';
+// const url = 'http://localhost:3000'
 export const HomePage = ({ isLogedIn, setIsLogedIn }) => {
     const [data, setData] = useState([]);
     const [seePassword, setSeePassword] = useState(0);
@@ -61,6 +65,16 @@ export const HomePage = ({ isLogedIn, setIsLogedIn }) => {
     const [currele, setCurrele] = useState({});
     const navigate = useNavigate();
     const [mode, setMode] = useState('light'); // Default theme
+    const [speakBtn, setSpeakBtn] = useState("Speak");
+    const [copyBtn, setCopyBtn] = useState("")
+    const [isCopied, setCopied] = useClipboard(copyBtn);
+
+    const { transcript, browserSupportsSpeechRecognition } = useSpeechRecognition()
+
+    if (!browserSupportsSpeechRecognition) {
+        return null
+    }
+    const ContinousListen = () => SpeechRecognition.startListening({ continuous: true, language: 'en-IN' })
 
     // Create the theme dynamically based on mode
     const theme = createTheme({
@@ -76,7 +90,7 @@ export const HomePage = ({ isLogedIn, setIsLogedIn }) => {
             const username = localStorage.getItem('username');
             const getAllData = async () => {
                 // fetch data based on username
-                const alldata = await axios.post("https://backend-to-do-11q2.onrender.com/user/alldataget", {
+                const alldata = await axios.post(`${url}/user/alldataget`, {
                     username: username
                 });
                 // set data 
@@ -100,7 +114,7 @@ export const HomePage = ({ isLogedIn, setIsLogedIn }) => {
             title: title,
             work: work
         };
-        const addData = await axios.post("https://backend-to-do-11q2.onrender.com/user/alldatainsert", data);
+        const addData = await axios.post(`${url}/user/alldatainsert`, data);
         setReload(!reload);
         settitle("");
         setWork("");
@@ -108,7 +122,7 @@ export const HomePage = ({ isLogedIn, setIsLogedIn }) => {
 
     const handleLoginSubmit = async (data) => {
         // Check login data
-        const checkUser = await axios.post("https://backend-to-do-11q2.onrender.com/user/login", data);
+        const checkUser = await axios.post(`${url}/user/login`, data);
         // check if user present and update the local storage 
         if (checkUser.data) {
             setIsLogedIn(1);
@@ -128,7 +142,7 @@ export const HomePage = ({ isLogedIn, setIsLogedIn }) => {
     const handleDelete = async (id) => {
         // delete the data when clicked on delete btn
         // based on the id 
-        const response = await axios.post("https://backend-to-do-11q2.onrender.com/user/deletedata", {
+        const response = await axios.post(`${url}/user/deletedata`, {
             _id: id
         });
         // update the array 
@@ -140,7 +154,7 @@ export const HomePage = ({ isLogedIn, setIsLogedIn }) => {
         const newEle = { ...currele, title, work };
         // update the data by first bringing it in to the 
         // two input areas
-        const response = await axios.post("https://backend-to-do-11q2.onrender.com/user/updatedata", newEle);
+        const response = await axios.post(`${url}/user/updatedata`, newEle);
         setReload(!reload);
         settitle("");
         setWork("");
@@ -149,12 +163,29 @@ export const HomePage = ({ isLogedIn, setIsLogedIn }) => {
         setUpdateData(0);
     }
     const handleUpdate = (ele) => {
-        if (updateData) return;
+        if (updateData || speakBtn == 'Loading') return;
         // once clicked on update not allow others to click in it untill it gets updates ->maintiain  concurrency 
         setUpdateData(1);
         settitle(ele.title);
         setWork(ele.work);
         setCurrele(ele);
+    }
+
+    const handleSpeak = async (ele) => {
+        if (speakBtn == 'Loading') {
+            return;
+        }
+        <Speech text={ele.work} displayText="Speak" textAsButton={true} />
+        setSpeakBtn('Speak')
+    }
+
+ 
+    useEffect(() => {
+        setWork(transcript)
+    }, [transcript])
+    const handleListenTodo = () => {
+    
+        ContinousListen();
     }
     if (isLogedIn) {
         return (
@@ -167,13 +198,14 @@ export const HomePage = ({ isLogedIn, setIsLogedIn }) => {
                         <label htmlFor="title">Title</label>
                         <input type="text" id="title" name="title" value={title} onChange={(e) => {
                             settitle(e.target.value)
-
                         }} className={homecss.input} />
                         <label htmlFor="tododata">Write Your To Do</label>
                         <textarea name="tododata" id="tododata" cols="40" rows="30" value={work} onChange={(e) => setWork(e.target.value)} placeholder="Write" className={homecss.textarea} ></textarea>
                         <Button variant="contained" type="Button" style={{
                             display: updateData ? "none" : "inline"
                         }} onClick={handleSubmitTodo} className={homecss.btn} >Submit</Button>
+                        <Button variant="contained" onClick={() => handleListenTodo()} className={homecss.btn}>Listen</Button>
+                        <Button variant="contained" onClick={SpeechRecognition.stopListening} className={homecss.btn} >Stop</Button>
                         <Button variant="contained" type="Button" style={{
                             display: updateData ? "inline" : "none"
                         }} onClick={handleUpdateValues} className={homecss.btn}>Update</Button>
@@ -183,12 +215,16 @@ export const HomePage = ({ isLogedIn, setIsLogedIn }) => {
                     <div className="allData">
                         <ul className={homecss.ul}>
                             {data.map((ele) => (
-                                <li key={ele._id} className={homecss.li}>
-                                    <span>Title : {ele.title} </span> <span>Work : {ele.work}</span>
+                                <li key={ele._id} className={homecss.li} >
+                                    <span>Title : {ele.title} </span> <span >Work : {ele.work}</span>
                                     <Button variant="contained" onClick={() => handleDelete(ele._id)} className={homecss.btn} > <AiFillDelete style={{
                                         fontSize: "1.5rem"
                                     }} /> </Button>
                                     <Button variant="contained" onClick={() => handleUpdate(ele)} className={homecss.btn} >Update</Button>
+                                    <Button variant="contained" onClick={() => handleSpeak(ele)} className={homecss.btn} >{speakBtn}</Button>
+                                    {/* <Button onClick={setCopied}>
+                                     copied {isCopied ? "Yes!" : "Nope!"}
+                                    </Button> */}
                                 </li>
                             ))}
                         </ul>

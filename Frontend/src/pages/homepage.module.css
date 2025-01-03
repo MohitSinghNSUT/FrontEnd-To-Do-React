@@ -1,50 +1,50 @@
 .container{
-display: flex;
-flex-direction: column;
-align-items: center;
-justify-content: center;
-border: 2px solid black;
-    height: 80vh;
-    gap: 1vh;
-}
-.btn{
-    color: white;
-    background-color: black;
-    height: 6vh;
-    width: 6vw;
-    font-size: 80%;
-    border-radius: 10%;
-    margin: 4px;
-}
-.input{
-    height: 5vh;
-    text-align: center;
-    width: 20vw;
-    border-radius: 10px;
-    margin-left: 1vw;
-    font-size: 2vh;
-}
-.textarea{
-    font-size: 2vh;
-}
-.ul{
     display: flex;
     flex-direction: column;
-    gap: 2vh;
     align-items: center;
-}
-.li{
-    padding: 4px;
-    list-style: none;
+    justify-content: center;
     border: 2px solid black;
-    text-align: center;
-    display: flex;
-    align-items: center;
-    gap: 2vw;
-}
-.li button{
-    margin: 1vh;
-}
-.signup{
-    align-self: center;
-}
+        height: 80vh;
+        gap: 1vh;
+    }
+    .btn{
+        color: white;
+        background-color: black;
+        height: 6vh;
+        width: 6vw;
+        font-size: 80%;
+        border-radius: 10%;
+        margin: 4px;
+    }
+    .input{
+        height: 5vh;
+        text-align: center;
+        width: 20vw;
+        border-radius: 10px;
+        margin-left: 1vw;
+        font-size: 2vh;
+    }
+    .textarea{
+        font-size: 2vh;
+    }
+    .ul{
+        display: flex;
+        flex-direction: column;
+        gap: 2vh;
+        align-items: center;
+    }
+    .li{
+        padding: 4px;
+        list-style: none;
+        border: 2px solid black;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        gap: 2vw;
+    }
+    .li button{
+        margin: 1vh;
+    }
+    .signup{
+        align-self: center;
+    }

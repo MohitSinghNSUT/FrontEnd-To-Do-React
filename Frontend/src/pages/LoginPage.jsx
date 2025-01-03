@@ -2,7 +2,8 @@ import axios from "axios";
 import { useState } from "react";
 import { Form, useNavigate } from "react-router-dom";
 import logincss from './login.module.css'
-
+import "regenerator-runtime/runtime";
+import speech from 'react-speech-recognition';
 
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
